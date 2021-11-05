@@ -1,7 +1,7 @@
 name: Build
 
 
-on: [push, pull_request]
+on: pull_request
 
 
 env:
@@ -24,8 +24,7 @@ jobs:
         sudo apt update
         sudo apt install -y \
           g++-8 \
-          gtk+-3.0 \
-          libboost1.70-dev \
+          libboost1.74-dev \
           liblua5.3-dev \
           libsdl2-dev \
           libsdl2-image-dev \
@@ -52,7 +51,7 @@ jobs:
     - name: Test
       run: |
         make clean
-        make tests VERBOSE=1
+        make tests -j 2 VERBOSE=1
       env:
         CC: gcc-8
         CXX: g++-8
@@ -95,7 +94,7 @@ jobs:
     - name: Test
       run: |
         make clean
-        make tests VERBOSE=1
+        make tests -j 3 VERBOSE=1
 
   clang-format:
     name: Run clang-format
