@@ -825,10 +825,9 @@ void render_status_ailments()
             return i18n::s.get_enum("core.status_ailment.name.hunger", index);
         },
         [](auto nutrition) {
-            return (nutrition >= 10)
-                ? snail::Color{0, 0, 0}
-                : (nutrition >= 1) ? snail::Color{200, 0, 0}
-                                   : snail::Color{250, 0, 0};
+            return (nutrition >= 10) ? snail::Color{0, 0, 0}
+                : (nutrition >= 1)   ? snail::Color{200, 0, 0}
+                                     : snail::Color{250, 0, 0};
         });
 
     y = render_one_status_ailment(
@@ -1015,8 +1014,8 @@ void render_status_ailments()
         },
         [](auto hours) {
             return (hours >= 50) ? snail::Color{255, 0, 0}
-                                 : (hours >= 30) ? snail::Color{100, 100, 0}
-                                                 : snail::Color{0, 0, 0};
+                : (hours >= 30)  ? snail::Color{100, 100, 0}
+                                 : snail::Color{0, 0, 0};
         });
 
     y = render_one_status_ailment(
@@ -1034,9 +1033,9 @@ void render_status_ailments()
             return i18n::s.get_enum("core.status_ailment.name.tired", index);
         },
         [](auto sp) {
-            return (sp < 0)
-                ? snail::Color{120, 120, 0}
-                : (sp < 25) ? snail::Color{80, 80, 0} : snail::Color{60, 60, 0};
+            return (sp < 0) ? snail::Color{120, 120, 0}
+                : (sp < 25) ? snail::Color{80, 80, 0}
+                            : snail::Color{60, 60, 0};
         });
 
     y = render_one_status_ailment(

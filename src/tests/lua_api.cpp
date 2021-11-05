@@ -61,16 +61,6 @@ assert(Hello.hello() == "Hello!")
 )"));
 }
 
-TEST_CASE("test loading of non-ASCII filepaths", "[Lua: Misc]")
-{
-    lua_testcase(u8"Windowsファイル名.lua");
-}
-
-TEST_CASE("Core API: Chara", "[Lua: API]")
-{
-    lua_testcase("chara.lua");
-}
-
 TEST_CASE("Core API: Env", "[Lua: API]")
 {
     const auto foobar_ver = latest_version.short_string();
