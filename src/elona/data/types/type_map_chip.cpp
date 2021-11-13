@@ -14,7 +14,7 @@ const constexpr char* data::DatabaseTraits<MapChipDB>::type_id;
 
 MapChip MapChipDB::convert(const lua::ConfigTable& data, const std::string& id)
 {
-    DATA_LEGACY_ID();
+    DATA_INTEGER_ID();
     DATA_REQ(atlas, int);
     DATA_OPT_OR(is_feat, bool, false);
     DATA_OPT_OR(kind, int, 0);
@@ -56,9 +56,10 @@ MapChip MapChipDB::convert(const lua::ConfigTable& data, const std::string& id)
 
     return MapChip{
         data::InstanceId{id},
-        legacy_id,
+        integer_id,
         atlas,
-        SharedId(std::string(Traits::type_id) + data_id_separator + id),
+        data::make_fqid(
+            data::PrototypeId{Traits::type_id}, data::InstanceId{id}),
         Extent{x, y, width, height, frame_width},
         filepath,
         is_feat,

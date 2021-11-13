@@ -11,6 +11,7 @@
 #include "../../../menu.hpp"
 #include "../../../shop.hpp"
 #include "../../../ui.hpp"
+#include "../../fmt.hpp"
 #include "../../interface.hpp"
 #include "../common.hpp"
 
@@ -110,7 +111,7 @@ void Internal_set_quest_flag(const std::string& id, int value)
 
 void Internal_go_to_quest_map(const std::string& map_name, int dungeon_level)
 {
-    auto id = the_mapdef_db[data::InstanceId{map_name}]->legacy_id;
+    auto id = the_mapdef_db[data::InstanceId{map_name}]->integer_id;
     map_data.stair_down_pos =
         cdata.player().position.y * 1000 + cdata.player().position.x;
     game_data.destination_map = id;
@@ -263,6 +264,16 @@ void Internal_strange_scientist_pick_reward()
 
 
 
+fmt::ParseResult Internal_parse_fmt(
+    const std::string& src,
+    sol::this_state state)
+{
+    fmt::FormatParser parser{src, state};
+    return parser.parse();
+}
+
+
+
 void bind(sol::table api_table)
 {
     /* clang-format off */
@@ -277,6 +288,7 @@ void bind(sol::table api_table)
     ELONA_LUA_API_BIND_FUNCTION("generate_fighters_guild_target", Internal_generate_fighters_guild_target);
     ELONA_LUA_API_BIND_FUNCTION("leave_map", Internal_leave_map);
     ELONA_LUA_API_BIND_FUNCTION("strange_scientist_pick_reward", Internal_strange_scientist_pick_reward);
+    ELONA_LUA_API_BIND_FUNCTION("parse_fmt", Internal_parse_fmt);
 
     /* clang-format on */
 }

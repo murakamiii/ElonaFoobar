@@ -9,28 +9,10 @@ namespace elona
 namespace lua
 {
 
-namespace api::modules::module_JSON5
-{
-
-std::pair<sol::object, sol::optional<std::string>> JSON5_parse(
-    const std::string& source,
-    sol::this_state state);
-std::string JSON5_stringify(sol::object value, sol::table opts);
-
-} // namespace api::modules::module_JSON5
-
-
-
 ConfigManager::ConfigManager(LuaEnv& lua)
     : LuaSubmodule(lua)
 {
-    env().set_function("json5_parse", api::modules::module_JSON5::JSON5_parse);
-    env().set_function(
-        "json5_stringify", api::modules::module_JSON5::JSON5_stringify);
-
-    const auto impl_filepath =
-        filesystem::dirs::data() / "script" / "kernel" / "config.lua";
-    _impl = safe_script_file(impl_filepath);
+    _impl = env()["kernel"]["Config"];
 }
 
 
@@ -38,11 +20,11 @@ ConfigManager::ConfigManager(LuaEnv& lua)
 void ConfigManager::load_schema(
     std::istream& in,
     const std::string& filename,
-    SharedId mod_id)
+    const std::string& mod_id)
 {
     std::string s{
         std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
-    _impl["load_schema"](s, filename, mod_id.get());
+    _impl["load_schema"](s, filename, mod_id);
 }
 
 

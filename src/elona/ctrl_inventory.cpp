@@ -305,12 +305,12 @@ void make_item_list(
             }
 
             // compatibility?
-            if (the_item_db[item->id]->legacy_id >= maxitemid ||
-                the_item_db[item->id]->legacy_id < 0)
+            if (the_item_db[item->id]->integer_id >= maxitemid ||
+                the_item_db[item->id]->integer_id < 0)
             {
                 dialog(i18n::s.get(
                     "core.ui.inv.common.invalid",
-                    the_item_db[item->id]->legacy_id));
+                    the_item_db[item->id]->integer_id));
                 item->remove();
                 item->id = "core.none";
                 continue;
@@ -697,7 +697,7 @@ void make_item_list(
 
             // ソート情報
             list(1, listmax) =
-                reftype * 1000 + the_item_db[item->id]->legacy_id;
+                reftype * 1000 + the_item_db[item->id]->integer_id;
             if (item->id == "core.disc")
             {
                 list(1, listmax) += item->param1 + 900;
@@ -886,7 +886,7 @@ void show_message(const OptionalItemRef& citrade, const OptionalItemRef& cidip)
         }
     }
 
-    asset_load("deco_inv");
+    asset_load("core.deco_inv");
     gsel(0);
     if (returnfromidentify == 0)
     {
@@ -909,7 +909,7 @@ on_shortcut(OptionalItemRef& citrade, OptionalItemRef& cidip, bool dropcontinue)
         for (int cnt = 0, cnt_end = (listmax); cnt < cnt_end; ++cnt)
         {
             p = list(0, cnt);
-            if (the_item_db[g_inv[p]->id]->legacy_id == invsc)
+            if (the_item_db[g_inv[p]->id]->integer_id == invsc)
             {
                 f = 1;
                 if (g_inv[p]->has_charges)
@@ -924,7 +924,7 @@ on_shortcut(OptionalItemRef& citrade, OptionalItemRef& cidip, bool dropcontinue)
         }
         if (f == 0)
         {
-            if (itemfind(g_inv.pc(), *the_item_db.get_id_from_legacy(invsc)))
+            if (itemfind(g_inv.pc(), *the_item_db.get_id_from_integer(invsc)))
             {
                 Message::instance().linebreak();
                 txt(i18n::s.get("core.action.cannot_do_in_global"));
@@ -988,7 +988,7 @@ void draw_menu(bool dropcontinue)
     y = 34;
     x = windoww - 650 + 156;
     window2(x, y, 475, 22, 5, 5);
-    draw("radar_deco", x - 28, y - 8);
+    draw("core.radar_deco", x - 28, y - 8);
     if (dropcontinue)
     {
         i = 4;
@@ -1016,12 +1016,13 @@ void draw_menu(bool dropcontinue)
             break;
         }
         p = cycle(cnt, i);
-        draw_indexed("inventory_icon", x + cnt * 44 + 20, y - 24, invicon(p));
+        draw_indexed(
+            "core.inventory_icon", x + cnt * 44 + 20, y - 24, invicon(p));
         if (invctrl == p)
         {
             gmode(5, 70);
             draw_indexed(
-                "inventory_icon", x + cnt * 44 + 20, y - 24, invicon(p));
+                "core.inventory_icon", x + cnt * 44 + 20, y - 24, invicon(p));
             gmode(2);
         }
         std::string inv_command_txt =
@@ -1084,7 +1085,7 @@ void draw_window(optional_ref<Character> inventory_owner, bool dropcontinue)
 
     if (invicon(invctrl) != -1)
     {
-        draw_indexed("inventory_icon", wx + 46, wy - 14, invicon(invctrl));
+        draw_indexed("core.inventory_icon", wx + 46, wy - 14, invicon(invctrl));
     }
     s = i18n::s.get("core.ui.inv.window.weight");
     if (invctrl == 11 || invctrl == 12)
@@ -1100,13 +1101,13 @@ void draw_window(optional_ref<Character> inventory_owner, bool dropcontinue)
 
     draw_additional_item_info_label(wx + 300, wy + 40);
 
-    draw("deco_inv_a", wx + ww - 136, wy - 6);
+    draw("core.deco_inv_a", wx + ww - 136, wy - 6);
     if (g_show_additional_item_info == AdditionalItemInfo::none)
     {
-        draw("deco_inv_b", wx + ww - 186, wy - 6);
+        draw("core.deco_inv_b", wx + ww - 186, wy - 6);
     }
-    draw("deco_inv_c", wx + ww - 246, wy - 6);
-    draw("deco_inv_d", wx - 6, wy - 6);
+    draw("core.deco_inv_c", wx + ww - 246, wy - 6);
+    draw("core.deco_inv_d", wx - 6, wy - 6);
     s = ""s + listmax + u8" items"s;
     s += "  ("s +
         i18n::s.get(
@@ -1225,7 +1226,7 @@ void draw_item_list(const OptionalItemRef& mainweapon)
         for (int cnt = 0; cnt < 20; ++cnt)
         {
             if (game_data.skill_shortcuts.at(cnt) ==
-                the_item_db[g_inv[p]->id]->legacy_id + invctrl * 10000)
+                the_item_db[g_inv[p]->id]->integer_id + invctrl * 10000)
             {
                 s +=
                     u8"{"s + get_bound_shortcut_key_name_by_index(cnt) + u8"}"s;
@@ -1238,7 +1239,7 @@ void draw_item_list(const OptionalItemRef& mainweapon)
 
         if (g_inv[p]->body_part != 0)
         {
-            draw("equipped", wx + 46, wy + 72 + cnt * 18 - 3);
+            draw("core.equipped", wx + 46, wy + 72 + cnt * 18 - 3);
             if (g_inv[p] == mainweapon)
             {
                 s += i18n::space_if_needed() + "(" +
@@ -1280,7 +1281,7 @@ void show_money(optional_ref<Character> inventory_owner)
         {
             font(13 - en * 2);
             gmode(2);
-            draw("gold_coin", wx + 340, wy + 32);
+            draw("core.gold_coin", wx + 340, wy + 32);
             mes(wx + 368,
                 wy + 37 - en * 2,
                 ""s + inventory_owner->gold + u8" gp"s);
@@ -1807,7 +1808,7 @@ OnEnterResult on_enter_give(
                 f = 0;
             }
             // scroll of teleport/treasure map/deeds
-            switch (the_item_db[selected_item->id]->legacy_id)
+            switch (the_item_db[selected_item->id]->integer_id)
             {
             case 16:
             case 245:
@@ -2632,7 +2633,7 @@ optional<MenuResult> on_cancel(bool dropcontinue)
 bool on_assign_shortcut(const std::string& action, int shortcut)
 {
     snd("core.ok1");
-    p = the_item_db[g_inv[list(0, pagesize * page + cs)]->id]->legacy_id +
+    p = the_item_db[g_inv[list(0, pagesize * page + cs)]->id]->integer_id +
         invctrl * 10000;
     if (game_data.skill_shortcuts.at(shortcut) == p)
     {

@@ -49,9 +49,9 @@ enum class ChipEffect : int
 struct MapChip
 {
     data::InstanceId id;
-    int legacy_id{};
+    int integer_id{};
     int atlas{};
-    SharedId key{};
+    data::FullyQualifiedId key{};
     Extent source{};
     optional<fs::path> filepath;
     bool is_feat;

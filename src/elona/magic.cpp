@@ -129,7 +129,7 @@ bool _magic_1136(const ItemRef& treasure_map)
     }
     txt(i18n::s.get("core.magic.map.apply"));
     snd("core.book1");
-    const auto& info = asset_load("paper");
+    const auto& info = asset_load("core.paper");
     gsel(0);
     ww = info.width;
     wh = info.height;
@@ -2500,7 +2500,7 @@ bool _magic_21_1127(Character& subject)
             target_item->modify_number(-1);
             flt();
             const auto reconstructed_artifact = itemcreate_player_inv(
-                the_item_db[target_item->id]->legacy_id, 0);
+                the_item_db[target_item->id]->integer_id, 0);
             assert(reconstructed_artifact);
             if (equip != 0)
             {
@@ -2527,7 +2527,9 @@ bool _magic_21_1127(Character& subject)
             randomize();
             change_item_material(
                 target_item,
-                *the_item_material_db.get_id_from_legacy(material));
+                material == 0
+                    ? data::InstanceId{}
+                    : *the_item_material_db.get_id_from_integer(material));
             txt(i18n::s.get(
                 "core.magic.change_material.apply",
                 subject,
@@ -2652,7 +2654,7 @@ bool _magic_630_1129(Character& subject)
         assert(target_item_opt);
         const auto target_item = target_item_opt.unwrap();
         item_db_get_charge_level(
-            target_item, the_item_db[target_item->id]->legacy_id);
+            target_item, the_item_db[target_item->id]->integer_id);
         if (ichargelevel < 1 || target_item->id == "core.rod_of_wishing" ||
             target_item->id == "core.rod_of_domination" ||
             target_item->id == "core.spellbook_of_wishing" ||
@@ -2748,7 +2750,7 @@ bool _magic_629(Character& subject)
         assert(target_item_opt);
         const auto target_item = target_item_opt.unwrap();
         item_db_get_charge_level(
-            target_item, the_item_db[target_item->id]->legacy_id);
+            target_item, the_item_db[target_item->id]->integer_id);
         for (int cnt = 0; cnt < 1; ++cnt)
         {
             if (ichargelevel == 1)

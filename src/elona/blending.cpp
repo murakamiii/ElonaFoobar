@@ -49,7 +49,7 @@ std::string get_recipe_material_name(int recipe_id, int step)
     return lua::call_with_result<std::string>(
         "core.Impl.Blending.get_material_name",
         "<error>",
-        the_blending_recipe_db.get_id_from_legacy(recipe_id)->get(),
+        the_blending_recipe_db.get_id_from_integer(recipe_id)->get(),
         step + 1);
 }
 
@@ -128,8 +128,9 @@ int calc_success_rate(
     for (const auto& [skill_id, required_level] :
          the_blending_recipe_db.ensure(recipe_id).required_skills)
     {
-        const auto legacy_skill_id = the_ability_db.ensure(skill_id).legacy_id;
-        if (cdata.player().get_skill(legacy_skill_id).level <= 0)
+        const auto integer_skill_id =
+            the_ability_db.ensure(skill_id).integer_id;
+        if (cdata.player().get_skill(integer_skill_id).level <= 0)
         {
             rate -= 125;
             continue;
@@ -140,7 +141,7 @@ int calc_success_rate(
             d = 1;
         }
         int p =
-            (d * 200 / cdata.player().get_skill(legacy_skill_id).level - 200) *
+            (d * 200 / cdata.player().get_skill(integer_skill_id).level - 200) *
             -1;
         if (p > 0)
         {
@@ -192,7 +193,7 @@ bool check_one_blending_material(
         "core.Impl.Blending.check_material",
         false,
         item,
-        the_blending_recipe_db.get_id_from_legacy(recipe_id)->get(),
+        the_blending_recipe_db.get_id_from_integer(recipe_id)->get(),
         step + 1);
 }
 
@@ -274,7 +275,7 @@ void collect_blending_materials(
             result.emplace_back(
                 item->global_index(),
                 static_cast<int>(the_item_db[item->id]->category) * 1000 +
-                    the_item_db[item->id]->legacy_id);
+                    the_item_db[item->id]->integer_id);
         }
     }
 }
@@ -442,7 +443,7 @@ void window_recipe(
         dy_ += 17;
         ++i_;
     }
-    draw("deco_blend_b", wx + ww + 243, wy - 4);
+    draw("core.deco_blend_b", wx + ww + 243, wy - 4);
     if (step == i_ - 2)
     {
         boxf(dx_ - 10, dy_ - 2, width - 60, 17, {60, 20, 10, 32});
@@ -471,18 +472,18 @@ void window_recipe(
         for (const auto& [skill_id, required_level] :
              the_blending_recipe_db.ensure(rpid).required_skills)
         {
-            const auto legacy_skill_id =
-                the_ability_db.ensure(skill_id).legacy_id;
+            const auto integer_skill_id =
+                the_ability_db.ensure(skill_id).integer_id;
             const auto text_color =
                 (required_level >
-                 cdata.player().get_skill(legacy_skill_id).level)
+                 cdata.player().get_skill(integer_skill_id).level)
                 ? snail::Color{150, 0, 0}
                 : snail::Color{0, 120, 0};
             mes(dx_ + cnt % 2 * 140,
                 dy_ + cnt / 2 * 17,
                 the_ability_db.get_text(skill_id, "name") + u8"  "s +
                     required_level + u8"("s +
-                    cdata.player().get_skill(legacy_skill_id).level + u8")"s,
+                    cdata.player().get_skill(integer_skill_id).level + u8")"s,
                 text_color);
             ++cnt;
         }
@@ -642,13 +643,16 @@ optional<TurnResult> blending_menu_select_recipe()
 
             if (blendchecklist(cnt))
             {
-                draw("blend_ingredient", wx + 330, wy + 53 + cnt * 19);
+                draw("core.blend_ingredient", wx + 330, wy + 53 + cnt * 19);
             }
             rpid = list(0, p);
 
             int difficulty = (4 - calc_success_rate(rpid, -1, -1) / 25);
             draw_indexed(
-                "recipe_difficulty", wx + 317, wy + 60 + cnt * 19, difficulty);
+                "core.recipe_difficulty",
+                wx + 317,
+                wy + 60 + cnt * 19,
+                difficulty);
         }
         font(14 - en * 2);
         cs_listbk();
@@ -678,7 +682,7 @@ optional<TurnResult> blending_menu_select_recipe()
             cs_bk = cs;
         }
         windowshadow(1) = 0;
-        draw("deco_blend_c", wx + 10, wy + wh - 100);
+        draw("core.deco_blend_c", wx + 10, wy + wh - 100);
         redraw();
 
         const auto action = get_selected_item(p(0));
@@ -795,7 +799,7 @@ void blendig_menu_select_materials()
 
             if (g_inv[p]->body_part != 0)
             {
-                draw("equipped", wx + 46, wy + 72 + cnt * 18 - 3);
+                draw("core.equipped", wx + 46, wy + 72 + cnt * 18 - 3);
             }
             cs_list(
                 cs == cnt,
@@ -825,7 +829,7 @@ void blendig_menu_select_materials()
             cs_bk = cs;
         }
         windowshadow(1) = 0;
-        draw("deco_blend_c", wx + 10, wy + wh - 100);
+        draw("core.deco_blend_c", wx + 10, wy + wh - 100);
         redraw();
 
         const auto action = get_selected_item(p(0));
@@ -858,7 +862,7 @@ void blendig_menu_select_materials()
             }
             rpref(10 + step * 2 + 0) = item_index;
             rpref(10 + step * 2 + 1) =
-                the_item_db[g_inv[item_index]->id]->legacy_id;
+                the_item_db[g_inv[item_index]->id]->integer_id;
             snd("core.drink1");
             txt(i18n::s.get("core.blending.steps.you_add", g_inv[item_index]));
             ++step;
@@ -908,7 +912,7 @@ bool has_required_materials()
             return false;
         }
         if (g_inv[rpref(10 + cnt * 2)]->number() <= 0 ||
-            the_item_db[g_inv[rpref(10 + cnt * 2)]->id]->legacy_id !=
+            the_item_db[g_inv[rpref(10 + cnt * 2)]->id]->integer_id !=
                 rpref(11 + cnt * 2))
         {
             return false;
@@ -1030,7 +1034,7 @@ void blending_on_finish()
         {
             chara_gain_skill_exp(
                 cdata.player(),
-                the_ability_db.ensure(skill_id).legacy_id,
+                the_ability_db.ensure(skill_id).integer_id,
                 50 + required_level + rpref(2) / 10000 * 25,
                 2,
                 50);
@@ -1153,7 +1157,7 @@ void blending_init_recipe_data()
     {
         if (recipe_data.generated)
         {
-            rpsourcelist(rpsourcelist.size()) = recipe_data.legacy_id;
+            rpsourcelist(rpsourcelist.size()) = recipe_data.integer_id;
         }
     }
 }
@@ -1173,7 +1177,7 @@ void blending_clear_recipememory()
     {
         if (recipe_data.known)
         {
-            recipememory(recipe_data.legacy_id) = 1;
+            recipememory(recipe_data.integer_id) = 1;
         }
     }
 }
@@ -1209,7 +1213,7 @@ TurnResult blending_menu()
 {
     step = -1;
     rpid = 0;
-    asset_load("deco_blend");
+    asset_load("core.deco_blend");
     gsel(0);
     clear_rprefmat();
 
@@ -1264,10 +1268,10 @@ TurnResult blending_menu()
             listmax = 0;
             for (const auto& [_, recipe_data] : the_blending_recipe_db)
             {
-                if (recipememory(recipe_data.legacy_id) > 0)
+                if (recipememory(recipe_data.integer_id) > 0)
                 {
-                    list(0, listmax) = recipe_data.legacy_id;
-                    list(1, listmax) = recipe_data.legacy_id;
+                    list(0, listmax) = recipe_data.integer_id;
+                    list(1, listmax) = recipe_data.integer_id;
                     ++listmax;
                 }
             }
@@ -1310,7 +1314,7 @@ void window_recipe2(int number_of_products)
     const auto dy = 10;
 
     gmode(2);
-    draw("deco_blend_a", dx, 0);
+    draw("core.deco_blend_a", dx, 0);
 
     font(15 - en * 2, snail::Font::Style::bold);
     bmes(

@@ -207,14 +207,15 @@ optional_ref<const Extent> draw_get_rect_item(int id)
  */
 optional_ref<const Extent> draw_get_rect_portrait(const std::string& key)
 {
-    return loader["core.portrait"s + data_id_separator + key];
+    return draw_get_rect(
+        data::make_fqid("core.portrait", data::InstanceId{key}));
 }
 
 
 
-optional_ref<const Extent> draw_get_rect(const std::string& key)
+optional_ref<const Extent> draw_get_rect(data::FullyQualifiedId id)
 {
-    return loader[key];
+    return loader[id];
 }
 
 
@@ -409,7 +410,7 @@ void show_hp_bar(HPBarSide side, int inf_clocky)
                 const int width = clamp(ally.hp * 30 / ally.max_hp, 1, 30);
                 const int x_ = 16 + (windoww - 108) * right;
                 const int y_ = y + 17;
-                draw_bar("ally_health_bar", x_, y_, width * 3, 9, width);
+                draw_bar("core.ally_health_bar", x_, y_, width * 3, 9, width);
 
                 // Show leash icon.
                 if (g_config.leash_icon() && ally.is_leashed())
@@ -589,7 +590,7 @@ void show_damage_popups()
 void draw_emo(const Character& chara, int x, int y)
 {
     gmode(2);
-    draw_indexed("emotion_icons", x + 16, y, chara.emotion_icon);
+    draw_indexed("core.emotion_icons", x + 16, y, chara.emotion_icon);
 }
 
 
@@ -741,7 +742,7 @@ void initialize_map_chips(const MapChipDB& db)
     {
         auto& atlas = chip_data.get_map(data.atlas);
 
-        atlas[data.legacy_id] = data;
+        atlas[data.integer_id] = data;
     }
 
     {
@@ -885,7 +886,7 @@ void draw_prepare_map_chips()
     gmode(0);
 
     // Contains the sprites for world map clouds.
-    asset_load("map");
+    asset_load("core.map");
 
     gsel(0);
     gmode(2);
@@ -899,15 +900,15 @@ void initialize_item_chips(const ItemChipDB& db)
 
     for (const auto& chip_data : db.values())
     {
-        SharedId key = chip_data.chip.key;
-        int legacy_id = chip_data.legacy_id;
+        const auto key = chip_data.chip.key;
+        int integer_id = chip_data.integer_id;
 
         // insert chip data into global vector.
-        if (static_cast<int>(item_chips.size()) < legacy_id)
+        if (static_cast<int>(item_chips.size()) < integer_id)
         {
-            item_chips.resize(legacy_id + 1);
+            item_chips.resize(integer_id + 1);
         }
-        item_chips[legacy_id] = chip_data.chip;
+        item_chips[integer_id] = chip_data.chip;
 
         if (chip_data.filepath)
         {
@@ -935,7 +936,7 @@ void initialize_portraits(const PortraitDB& db)
 
     for (const auto& portrait_data : db.values())
     {
-        SharedId key = portrait_data.key;
+        const auto key = portrait_data.key;
 
         if (portrait_data.filepath)
         {
@@ -964,15 +965,15 @@ void initialize_chara_chips(const CharaChipDB& db)
 
     for (const auto& chip_data : db.values())
     {
-        SharedId key = chip_data.chip.key;
-        int legacy_id = chip_data.legacy_id;
+        const auto key = chip_data.chip.key;
+        int integer_id = chip_data.integer_id;
 
         // Insert chip data into global vector.
-        if (static_cast<int>(chara_chips.size()) < legacy_id)
+        if (static_cast<int>(chara_chips.size()) < integer_id)
         {
-            chara_chips.resize(legacy_id + 1);
+            chara_chips.resize(integer_id + 1);
         }
-        chara_chips[legacy_id] = chip_data.chip;
+        chara_chips[integer_id] = chip_data.chip;
 
         if (chip_data.filepath)
         {
@@ -1028,8 +1029,8 @@ void draw_select_key(const std::string& key, int x, int y)
 {
     gmode(0);
     font(13);
-    draw("select_key", x, y);
-    const auto& image_info = get_image_info("select_key");
+    draw("core.select_key", x, y);
+    const auto& image_info = get_image_info("core.select_key");
     const auto glyph_size =
         snail::Application::instance().get_renderer().calculate_text_size(key);
     bmes(
@@ -1276,8 +1277,8 @@ void draw_sleep_background_frame()
 void load_sleep_background()
 {
     gmode(0);
-    asset_load("bg_night");
-    draw("bg_night", 0, 0, windoww, windowh - inf_verh);
+    asset_load("core.bg_night");
+    draw("core.bg_night", 0, 0, windoww, windowh - inf_verh);
     gsel(0);
 }
 

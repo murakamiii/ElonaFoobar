@@ -16,7 +16,7 @@ CharaChipData CharaChipDB::convert(
     const lua::ConfigTable& data,
     const std::string& id)
 {
-    DATA_LEGACY_ID();
+    DATA_INTEGER_ID();
     DATA_OPT_OR(tall, bool, false);
     DATA_OPT_OR(offset_y, int, 16);
 
@@ -52,10 +52,11 @@ CharaChipData CharaChipDB::convert(
 
     return CharaChipData{
         data::InstanceId{id},
-        legacy_id,
+        integer_id,
         Extent{x, y, width, height},
         CharaChip{
-            SharedId(std::string(Traits::type_id) + data_id_separator + id),
+            data::make_fqid(
+                data::PrototypeId{Traits::type_id}, data::InstanceId{id}),
             offset_y,
         },
         filepath,
