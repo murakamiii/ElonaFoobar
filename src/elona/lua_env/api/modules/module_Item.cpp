@@ -109,9 +109,9 @@ sol::optional<ItemRef> Item_create_xy(int x, int y, sol::table args)
     }
 
     // Random fixlv
-    if (auto it = args.get<sol::optional<Quality>>("quality"))
+    if (auto it = args.get<sol::optional<std::string>>("quality"))
     {
-        fixlv = calcfixlv(*it);
+        fixlv = calcfixlv(LuaEnums::QualityTable.ensure_from_string(*it));
     }
 
     // Clears flttypemajor and flttypeminor.
@@ -124,9 +124,9 @@ sol::optional<ItemRef> Item_create_xy(int x, int y, sol::table args)
     }
 
     // Exact fixlv
-    if (auto it = args.get<sol::optional<Quality>>("fixlv"))
+    if (auto it = args.get<sol::optional<std::string>>("fixlv"))
     {
-        fixlv = *it;
+        fixlv = LuaEnums::QualityTable.ensure_from_string(*it);
     }
 
     if (auto it = args.get<sol::optional<int>>("flttypemajor"))

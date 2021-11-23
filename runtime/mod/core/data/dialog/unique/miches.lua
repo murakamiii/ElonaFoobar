@@ -1,5 +1,4 @@
 local Chara = ELONA.require("core.Chara")
-local Enums = ELONA.require("core.Enums")
 local GUI = ELONA.require("core.GUI")
 local Internal = ELONA.require("core.Internal")
 local Item = ELONA.require("core.Item")
@@ -60,8 +59,8 @@ return {
       quest_finish = {
          text = {
             function()
-               Item.create(Chara.player().position, {id = "core.small_shield", level = 10, quality = Enums.Quality.good})
-               Item.create(Chara.player().position, {id = "core.girdle", level = 10, quality = Enums.Quality.good})
+               Item.create(Chara.player().position, {id = "core.small_shield", level = 10, quality = "good"})
+               Item.create(Chara.player().position, {id = "core.girdle", level = 10, quality = "good"})
                Item.create(Chara.player().position, "core.gold_piece", 3000)
                Item.create(Chara.player().position, "core.platinum_coin", 2)
 

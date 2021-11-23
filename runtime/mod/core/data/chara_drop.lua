@@ -2,7 +2,6 @@ local Chara = ELONA.require("core.Chara")
 local Item = ELONA.require("core.Item")
 local Map = ELONA.require("core.Map")
 local Rand = ELONA.require("core.Rand")
-local Enums = ELONA.require("core.Enums")
 
 -- Returns 'drops' table from array of item IDs.
 local function make_drops(ids)
@@ -149,7 +148,7 @@ ELONA.data:add(
                                             {
                                                level = args.chara.level,
                                                flttypemajor = 92000,
-                                               quality = Enums.Quality.good,
+                                               quality = "good",
                                                nostack = true
                                             }
                      )

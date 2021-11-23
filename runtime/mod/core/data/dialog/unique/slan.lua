@@ -1,5 +1,4 @@
 local Chara = ELONA.require("core.Chara")
-local Enums = ELONA.require("core.Enums")
 local GUI = ELONA.require("core.GUI")
 local I18N = ELONA.require("core.I18N")
 local Internal = ELONA.require("core.Internal")

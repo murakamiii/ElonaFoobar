@@ -884,7 +884,8 @@ void bind(sol::state& lua)
      *
      * [RW] The quality of the character.
      */
-    LuaCharacter.set("quality", &Character::quality);
+    LuaCharacter.set(
+        "quality", LUA_API_ENUM_PROPERTY(Character, quality, Quality));
 
     /**
      * @luadoc prototype field table

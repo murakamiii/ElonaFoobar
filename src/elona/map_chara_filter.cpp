@@ -59,13 +59,15 @@ static void _process_chara_filter(const lua::WrappedFunction& chara_filter)
     {
         objlv_ = calcobjlv(*it);
     }
-    if (auto it = opts.optional<Quality>("fixlv"))
+    if (auto it = opts.optional<std::string>("fixlv"))
     {
-        fixlv_ = *it;
+        fixlv_ =
+            lua::LuaEnums::QualityTable.get_from_string(*it, Quality::none);
     }
-    if (auto it = opts.optional<Quality>("quality"))
+    if (auto it = opts.optional<std::string>("quality"))
     {
-        fixlv_ = calcfixlv(*it);
+        fixlv_ = calcfixlv(
+            lua::LuaEnums::QualityTable.get_from_string(*it, Quality::none));
     }
     if (auto it = opts.optional<std::string>("id"))
     {
