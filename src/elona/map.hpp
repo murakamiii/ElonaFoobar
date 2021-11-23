@@ -50,7 +50,6 @@ struct MapData
     int max_item_count{};
     int regenerate_count{};
     int play_campfire_sound{};
-    int mefs_loaded_flag{};
 
 
     /**
@@ -457,6 +456,7 @@ void map_prepare_for_travel(int id, int level = 1);
 void map_prepare_for_travel_with_prev(int id, int level = 1);
 
 int map_global_place_random_nefias();
+int dist_town();
 
 
 void addefmap(int = 0, int = 0, int = 0, int = 0, int = 0, int = 0);

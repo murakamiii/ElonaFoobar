@@ -381,11 +381,12 @@ void inventory_deserialize(serialization::binary::IArchive& ar, Inventory& inv)
     const auto n = inv.size();
     for (size_t i = 0; i < n; ++i)
     {
+        const auto slot = static_cast<InventorySlot>(i);
         bool exists;
         ar(exists);
         if (exists)
         {
-            const auto item_ref = Inventory::create(InventorySlot{&inv, i});
+            const auto item_ref = inv.create(slot);
             auto& item = *item_ref.get_raw_ptr();
             ar(item);
             ItemIdTable::instance().add(item_ref);
@@ -400,11 +401,12 @@ void inventory_serialize(serialization::binary::OArchive& ar, Inventory& inv)
     const auto n = inv.size();
     for (size_t i = 0; i < n; ++i)
     {
-        bool exists = !!inv.at(i);
+        const auto slot = static_cast<InventorySlot>(i);
+        bool exists = !!inv.at(slot);
         ar(exists);
         if (exists)
         {
-            const auto item_ref = inv.at(i).unwrap();
+            const auto item_ref = inv.at(slot).unwrap();
             auto& item = *item_ref.get_raw_ptr();
             ar(item);
         }
@@ -729,22 +731,8 @@ void ctrl_file_map_read()
 
     {
         const auto filepath = dir / fs::u8path(u8"mef_"s + mid + u8".s2");
-        if (map_data.mefs_loaded_flag == 0)
-        {
-            for (int y = 0; y < map_data.height; ++y)
-            {
-                for (int x = 0; x < map_data.width; ++x)
-                {
-                    cell_data.at(x, y).mef_index_plus_one = 0;
-                }
-            }
-            map_data.mefs_loaded_flag = 1;
-        }
-        else
-        {
-            (void)save_fs_exists(fs::u8path(u8"mef_"s + mid + u8".s2"));
-            load_v2(filepath, mef, 0, 9, 0, MEF_MAX);
-        }
+        (void)save_fs_exists(fs::u8path(u8"mef_"s + mid + u8".s2"));
+        load_v2(filepath, mef, 0, 9, 0, MEF_MAX);
     }
 
     arrayfile(true, u8"mdatan", dir / fs::u8path(u8"mdatan_"s + mid + u8".s2"));
@@ -870,15 +858,16 @@ void ctrl_file_map_items_write(const fs::path& filename)
 
 
 
-void ctrl_file_custom_map_read()
+void ctrl_file_custom_map_read(const fs::path& filename_base)
 {
-    ELONA_LOG("save.ctrl_file") << "custom_map_read() BEGIN";
+    ELONA_LOG("save.ctrl_file")
+        << "custom_map_read(" << filename_base.to_u8string() << ") BEGIN";
 
     DIM3(cmapdata, 5, 400);
     DIM3(mef, 9, MEF_MAX);
 
     {
-        const auto filepath = fs::u8path(fmapfile + u8".idx"s);
+        const auto filepath = filename_base.replace_extension("idx");
         load_v1(filepath, mdatatmp, 0, 100);
         for (int j = 0; j < 5; ++j)
         {
@@ -892,7 +881,7 @@ void ctrl_file_custom_map_read()
     }
 
     {
-        const auto filepath = fs::u8path(fmapfile + u8".map"s);
+        const auto filepath = filename_base.replace_extension("map");
         DIM3(mapsync, map_data.width,
              map_data.height); // TODO length_exception
         cell_data.init(map_data.width, map_data.height);
@@ -902,36 +891,43 @@ void ctrl_file_custom_map_read()
     }
 
     {
-        const auto filepath = fs::u8path(fmapfile + u8".obj"s);
+        const auto filepath = filename_base.replace_extension("obj");
         if (fs::exists(filepath))
         {
             load_v2(filepath, cmapdata, 0, 5, 0, 400);
         }
     }
 
-    ELONA_LOG("save.ctrl_file") << "custom_map_read() END";
+    ELONA_LOG("save.ctrl_file")
+        << "custom_map_read(" << filename_base.to_u8string() << ") END";
 }
 
 
 
-void ctrl_file_map_load_map_obj_files()
+void ctrl_file_map_load_map_obj_files(const fs::path& filename_base)
 {
-    ELONA_LOG("save.ctrl_file") << "map_load_map_obj_files() BEGIN";
+    ELONA_LOG("save.ctrl_file") << "map_load_map_obj_files("
+                                << filename_base.to_u8string() << ") BEGIN";
 
     DIM3(cmapdata, 5, 400);
 
-    std::vector<int> tile_grid(cell_data.width() * cell_data.height());
-    load_vec(fs::u8path(fmapfile + u8".map"), tile_grid);
-    cell_data.load_tile_grid(tile_grid);
-
-    const auto filepath = fs::u8path(fmapfile + u8".obj"s);
-    if (!fs::exists(filepath))
     {
-        return;
+        const auto filepath = filename_base.replace_extension("map");
+        std::vector<int> tile_grid(cell_data.width() * cell_data.height());
+        load_vec(filepath, tile_grid);
+        cell_data.load_tile_grid(tile_grid);
     }
-    load_v2(filepath, cmapdata, 0, 5, 0, 400);
 
-    ELONA_LOG("save.ctrl_file") << "map_load_map_obj_files() END";
+    {
+        const auto filepath = filename_base.replace_extension("obj");
+        if (fs::exists(filepath))
+        {
+            load_v2(filepath, cmapdata, 0, 5, 0, 400);
+        }
+    }
+
+    ELONA_LOG("save.ctrl_file")
+        << "map_load_map_obj_files(" << filename_base.to_u8string() << ") END";
 }
 
 
@@ -1089,7 +1085,7 @@ void ctrl_file_tmp_inv_read(const fs::path& filename)
     (void)save_fs_exists(filename);
 
     load_internal(
-        path, [&](auto& ar) { inventory_deserialize(ar, g_inv.tmp()); });
+        path, [&](auto& ar) { inventory_deserialize(ar, *g_inv.tmp()); });
 
     ELONA_LOG("save.ctrl_file")
         << "tmp_inv_read(" << filename.to_u8string() << ") END";
@@ -1107,7 +1103,7 @@ void ctrl_file_tmp_inv_write(const fs::path& filename)
     (void)save_fs_exists(filename);
 
     save_internal(
-        path, [&](auto& ar) { inventory_serialize(ar, g_inv.tmp()); });
+        path, [&](auto& ar) { inventory_serialize(ar, *g_inv.tmp()); });
 
     ELONA_LOG("save.ctrl_file")
         << "tmp_inv_write(" << filename.to_u8string() << ") END";

@@ -16,6 +16,7 @@
 #include "food.hpp"
 #include "i18n.hpp"
 #include "initialize_map_types.hpp"
+#include "inventory.hpp"
 #include "item.hpp"
 #include "itemgen.hpp"
 #include "lua_env/event_manager.hpp"
@@ -164,7 +165,7 @@ void _reveal_map()
 
 void _init_map_visibility()
 {
-    map_setfog();
+    map_set_fog();
     if (map_should_reveal_fog())
     {
         _reveal_map();
@@ -1287,7 +1288,6 @@ void _generate_new_map()
     randomize();
 
     map_data.regenerate_count = game_data.map_regenerate_count;
-    map_data.mefs_loaded_flag = 1;
 }
 
 
@@ -1361,7 +1361,7 @@ int initialize_map_pregenerate()
         ctrl_file_map_items_read(fs::u8path(u8"inv_"s + mid + u8".s2"));
         if (mode == 2)
         {
-            map_placeplayer();
+            map_place_player_and_allies();
         }
         return 1;
     }
@@ -1395,7 +1395,7 @@ void migrate_old_save_v17()
             cell_data.at(x, y).item_info_memory.clear();
         }
     }
-    for (const auto& item : g_inv.ground())
+    for (const auto& item : *inv_map())
     {
         cell_refresh(item->position().x, item->position().y);
     }

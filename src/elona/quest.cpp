@@ -12,6 +12,7 @@
 #include "dmgheal.hpp"
 #include "food.hpp"
 #include "i18n.hpp"
+#include "inventory.hpp"
 #include "item.hpp"
 #include "itemgen.hpp"
 #include "map.hpp"
@@ -1109,7 +1110,7 @@ void quest_exit_map()
 {
     if (game_data.executing_immediate_quest_type == 1006)
     {
-        for (const auto& item : g_inv.pc())
+        for (const auto& item : *inv_player())
         {
             if (item->own_state == OwnState::crop)
             {
@@ -1315,7 +1316,7 @@ void quest_all_targets_killed()
         modrank(0, 100, 2);
         cdata.player().fame += game_data.executing_immediate_quest_fame_gained;
         txt(i18n::s.get("core.quest.arena.stairs_appear"));
-        map_placeupstairs(map_data.width / 2, map_data.height / 2);
+        map_place_upstairs(map_data.width / 2, map_data.height / 2);
         ++area_data[game_data.previous_map2].winning_streak_in_arena;
         if (area_data[game_data.previous_map2].winning_streak_in_arena % 20 ==
             0)
