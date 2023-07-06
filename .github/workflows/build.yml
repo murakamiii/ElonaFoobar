@@ -25,6 +25,7 @@ jobs:
         sudo apt install -y \
           g++-12 \
           libboost1.81-dev \
+          libboost-system-dev \
           liblua5.3-dev \
           libsdl2-dev \
           libsdl2-image-dev \
