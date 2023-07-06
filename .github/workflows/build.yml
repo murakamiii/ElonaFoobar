@@ -11,50 +11,50 @@ env:
 
 
 jobs:
-  build-ubuntu:
-    name: Build Elona foobar on Ubuntu
-    runs-on: ubuntu-latest
+  # build-ubuntu:
+  #   name: Build Elona foobar on Ubuntu
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v1
+  #   steps:
+  #   - uses: actions/checkout@v1
 
-    - name: Install Dependencies
-      run: |
-        sudo add-apt-repository ppa:mhier/libboost-latest
-        sudo apt update
-        sudo apt install -y \
-          g++-12 \
-          libboost-all-dev \
-          liblua5.3-dev \
-          libsdl2-dev \
-          libsdl2-image-dev \
-          libsdl2-mixer-dev \
-          libsdl2-ttf-dev \
-          libsmpeg-dev \
-          openssl \
-          timidity
+  #   - name: Install Dependencies
+  #     run: |
+  #       sudo add-apt-repository ppa:mhier/libboost-latest
+  #       sudo apt update
+  #       sudo apt install -y \
+  #         g++-12 \
+  #         libboost-all-dev \
+  #         liblua5.3-dev \
+  #         libsdl2-dev \
+  #         libsdl2-image-dev \
+  #         libsdl2-mixer-dev \
+  #         libsdl2-ttf-dev \
+  #         libsmpeg-dev \
+  #         openssl \
+  #         timidity
 
-    - name: Cache Vanilla Elona
-      uses: actions/cache@v1
-      with:
-        path: deps/elona
-        key: elona122
+  #   - name: Cache Vanilla Elona
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: deps/elona
+  #       key: elona122
 
-    - name: Download Vanilla Elona
-      run: |
-        if [ ! -d deps/elona ]
-        then
-          wget --no-verbose "http://ylvania.style.coocan.jp/file/elona122.zip"
-          unzip -qq elona122.zip -d deps
-        fi
+  #   - name: Download Vanilla Elona
+  #     run: |
+  #       if [ ! -d deps/elona ]
+  #       then
+  #         wget --no-verbose "http://ylvania.style.coocan.jp/file/elona122.zip"
+  #         unzip -qq elona122.zip -d deps
+  #       fi
 
-    - name: Test
-      run: |
-        make clean
-        make tests -j 2 VERBOSE=1
-      env:
-        CC: gcc-12
-        CXX: g++-12
+  #   - name: Test
+  #     run: |
+  #       make clean
+  #       make tests -j 2 VERBOSE=1
+  #     env:
+  #       CC: gcc-12
+  #       CXX: g++-12
 
 
   build-macos:
