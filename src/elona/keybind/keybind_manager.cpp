@@ -7,6 +7,7 @@
 #include "keybind_deserializer.hpp"
 #include "keybind_serializer.hpp"
 
+#include <fstream>
 
 
 namespace elona
