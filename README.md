@@ -34,7 +34,7 @@
 * `make`
 * CMake 3.2 or later
 * C++ compiler which supports C++17
-* Boost 1.75
+* Boost 1.82
 * Lua 5.4
 * SDL2, SDL2_image, SDL2_ttf and SDL2_mixer
 * OpenSSL 1.1.x

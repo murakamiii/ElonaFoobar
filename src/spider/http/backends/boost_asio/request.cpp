@@ -254,8 +254,8 @@ private:
         res.status = _response.result_int();
         for (const auto& header : _response)
         {
-            res.headers[header.name_string().to_string()] =
-                header.value().to_string();
+            res.headers[std::string(header.name_string())] =
+                std::string(header.value());
         }
         res.body = _response.body();
 
@@ -449,7 +449,7 @@ private:
         case status::permanent_redirect:
             if (0 < _redirects)
             {
-                do_redirect(_response[field::location].to_string());
+                do_redirect(std::string(_response[field::location]));
             }
             else
             {
