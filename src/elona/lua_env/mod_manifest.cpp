@@ -1,5 +1,7 @@
 #include "mod_manifest.hpp"
 
+#include <fstream>
+
 #include "../../thirdparty/json5/json5.hpp"
 
 

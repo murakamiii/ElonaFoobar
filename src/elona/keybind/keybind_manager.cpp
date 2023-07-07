@@ -1,12 +1,13 @@
 #include "keybind_manager.hpp"
 
+#include <fstream>
+
 #include "../../util/strutil.hpp"
 #include "../filesystem.hpp"
 #include "../variables.hpp"
 #include "keybind.hpp"
 #include "keybind_deserializer.hpp"
 #include "keybind_serializer.hpp"
-
 
 
 namespace elona

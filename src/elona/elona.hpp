@@ -45,7 +45,7 @@ namespace internal
 {
 template <typename Lhs, typename Rhs>
 constexpr bool elona_vector_concat_as_string_v =
-    std::is_same_v<Lhs, std::string>&& std::is_same_v<Rhs, int>;
+    std::is_same_v<Lhs, std::string> && std::is_same_v<Rhs, int>;
 }
 
 

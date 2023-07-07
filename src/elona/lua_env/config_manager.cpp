@@ -1,5 +1,7 @@
 #include "config_manager.hpp"
 
+#include <fstream>
+
 #include "../filesystem.hpp"
 
 

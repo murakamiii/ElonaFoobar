@@ -2,6 +2,7 @@
 *.dump
 *.log
 bak/
+.vscode/
 
 /doxygen/
 
